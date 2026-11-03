@@ -1,0 +1,8 @@
+{
+  "name": "qadasy-aymen-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Qadasy.Aymen AI assistant website",
+  "engines": { "node": ">=20" },
+  "scripts": { "dev": "vercel dev" }
+}

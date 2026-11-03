@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131b">
+  <meta name="description" content="Qadasy.Aymen — a helpful AI assistant for ideas, learning, writing and everyday questions.">
+  <title>Qadasy.Aymen — AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:dark;--bg:#10131b;--panel:#171b26;--panel2:#1d2330;--line:#2a3140;--text:#f3f5fa;--muted:#929bad;--accent:#8b7cff;--accent2:#5e9bff;--good:#66d6ad}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;min-height:100vh}
+    button,textarea{font:inherit}button{cursor:pointer}
+    .app{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+    .sidebar{background:#0c0f16;border-right:1px solid #222836;padding:22px 16px;display:flex;flex-direction:column;gap:22px}
+    .brand{display:flex;align-items:center;gap:11px;padding:3px 7px}
+    .logo{width:39px;height:39px;border-radius:13px;background:linear-gradient(135deg,#8d7cff,#4f8ef7);display:grid;place-items:center;box-shadow:0 7px 25px #6557d944}
+    .logo svg{width:22px;height:22px}.brand-name{font-family:Manrope,sans-serif;font-weight:800;letter-spacing:-.5px;font-size:15px}.brand-sub{font-size:10px;color:#8993a8;letter-spacing:1.4px;margin-top:2px}
+    .new-chat{border:1px solid #343b4c;background:#171c28;color:#f5f6fb;border-radius:12px;padding:12px 13px;display:flex;align-items:center;gap:10px;font-weight:600;transition:.2s}
+    .new-chat:hover{background:#22293a;border-color:#59627a}
+    .side-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:#727d91;padding:0 9px}
+    .history{display:flex;flex-direction:column;gap:5px}.history-empty{font-size:12px;color:#667184;padding:10px}
+    .history-item{border:0;background:transparent;color:#aeb6c6;text-align:left;border-radius:9px;padding:10px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .history-item:hover{background:#1b202c;color:#fff}
+    .side-bottom{margin-top:auto;border-top:1px solid #242a36;padding:15px 7px 2px;color:#788397;font-size:11px;line-height:1.6}
+    .main{min-width:0;display:flex;flex-direction:column;min-height:100vh;position:relative}
+    .topbar{height:70px;border-bottom:1px solid #242a36;display:flex;align-items:center;justify-content:space-between;padding:0 34px;background:#10131bd9;backdrop-filter:blur(14px);position:sticky;top:0;z-index:3}
+    .model-label{display:flex;align-items:center;gap:9px;font-weight:600;font-size:13px}.status-dot{width:7px;height:7px;background:var(--good);border-radius:50%;box-shadow:0 0 10px #66d6ad88}
+    .top-right{display:flex;align-items:center;gap:10px;color:#8792a6;font-size:11px}.pill{border:1px solid #303849;border-radius:30px;padding:7px 11px}
+    .mobile-brand{display:none}
+    .content{width:min(850px,100%);margin:0 auto;padding:48px 28px 160px;flex:1}
+    .welcome{text-align:center;padding:55px 0 24px}.orb{width:64px;height:64px;margin:0 auto 22px;border-radius:22px;background:linear-gradient(140deg,#8879ff,#548ff4);display:grid;place-items:center;box-shadow:0 14px 50px #6758e533}
+    .orb svg{width:31px;height:31px}.eyebrow{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#9d91ff;font-weight:700}
+    h1{font-family:Manrope,sans-serif;font-size:clamp(30px,5vw,45px);letter-spacing:-1.8px;line-height:1.13;margin:13px 0 12px;font-weight:800}
+    .gradient{background:linear-gradient(90deg,#a99cff,#79b6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .welcome p{color:#929bad;font-size:14px;line-height:1.7;margin:0 auto;max-width:480px}
+    .suggestions{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin:32px auto 0;max-width:660px}
+    .suggestion{border:1px solid #2b3343;background:#171c27;border-radius:14px;text-align:left;padding:15px 16px;color:#e6e9f1;transition:.2s;min-height:82px}
+    .suggestion:hover{border-color:#7669db;background:#1c2130;transform:translateY(-2px)}
+    .suggestion strong{display:block;font-size:12px;margin-bottom:6px}.suggestion span{font-size:11px;color:#8994a8;line-height:1.5}
+    .messages{display:flex;flex-direction:column;gap:24px;padding-top:20px}
+    .message{display:flex;gap:13px;align-items:flex-start;animation:appear .22s ease}
+    @keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .avatar{width:31px;height:31px;flex:0 0 31px;border-radius:11px;display:grid;place-items:center;font-size:11px;font-weight:800}
+    .avatar.ai{background:linear-gradient(135deg,#8678ff,#568ff5);color:white}.avatar.user{background:#2b3445;color:#dce3f1}
+    .message-body{min-width:0;flex:1;padding-top:4px}.message-head{font-size:11px;font-weight:700;color:#cbd2e0;margin-bottom:8px}
+    .message-text{font-size:14px;line-height:1.8;color:#e0e5ef;overflow-wrap:anywhere}
+    .message-text p{margin:0 0 10px}.message-text p:last-child{margin-bottom:0}.message-text ul,.message-text ol{padding-left:22px;margin:7px 0 12px}
+    .message-text pre{white-space:pre-wrap;overflow-x:auto;background:#0c1018;border:1px solid #2a3140;border-radius:10px;padding:13px;font-size:12px}
+    .message-text code{font-family:ui-monospace,monospace;background:#252c3a;border-radius:5px;padding:2px 5px;font-size:.9em}
+    .message-text pre code{background:none;padding:0}.message-actions{display:flex;gap:7px;margin-top:10px}
+    .icon-btn{border:1px solid transparent;background:transparent;color:#778398;border-radius:7px;padding:5px 7px;font-size:11px}
+    .icon-btn:hover{background:#202635;color:#dce3ee;border-color:#303849}
+    .typing{display:flex;gap:5px;padding:7px 0}.typing i{width:6px;height:6px;border-radius:50%;background:#9a8cff;animation:bounce .9s infinite alternate}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes bounce{to{opacity:.35;transform:translateY(-4px)}}
+    .composer-wrap{position:fixed;bottom:0;left:270px;right:0;padding:20px 28px 15px;background:linear-gradient(180deg,#10131b00,#10131bf2 20%,#10131b 100%);z-index:2}
+    .composer{width:min(790px,100%);margin:0 auto;border:1px solid #343d50;background:#1a202c;border-radius:18px;padding:11px 12px 10px 17px;box-shadow:0 16px 55px #0005;transition:border .2s}
+    .composer:focus-within{border-color:#796de1}
+    .composer textarea{width:100%;resize:none;max-height:150px;min-height:30px;border:0;outline:0;background:transparent;color:#f2f4fa;font-size:14px;line-height:1.6;padding:5px 2px}
+    .composer textarea::placeholder{color:#788397}
+    .composer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:5px}
+    .composer-hint{font-size:10px;color:#778397}.send{width:36px;height:36px;border:0;border-radius:11px;background:linear-gradient(135deg,#8d7cff,#568ff5);color:#fff;display:grid;place-items:center;transition:.2s}
+    .send:hover{filter:brightness(1.12);transform:translateY(-1px)}.send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    .disclaimer{text-align:center;color:#687386;font-size:10px;margin:9px auto 0;max-width:700px;line-height:1.5}
+    .toast{position:fixed;bottom:115px;left:50%;transform:translateX(-50%);background:#252d3b;border:1px solid #3a4559;color:#e9edf6;border-radius:10px;padding:10px 14px;font-size:12px;z-index:10;box-shadow:0 8px 25px #0006}
+    .hidden{display:none!important}
+    @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{display:none}.topbar{height:60px;padding:0 17px}.mobile-brand{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800}.mobile-brand .logo{width:31px;height:31px;border-radius:10px}.model-label{display:none}.content{padding:26px 17px 150px}.welcome{padding:45px 0 18px}.suggestions{gap:8px}.suggestion{padding:12px;min-height:88px}.composer-wrap{left:0;padding:13px 13px 12px}.top-right{font-size:10px}.pill{padding:6px 9px}}
+    @media(max-width:420px){.suggestions{grid-template-columns:1fr}.suggestion{min-height:0}.welcome{padding-top:30px}h1{font-size:32px}.welcome p{font-size:13px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M12 3.2 14.2 9.8 21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2L12 3.2Z"/><path d="m19 2 .8 2.2L22 5l-2.2.8L19 8l-.8-2.2L16 5l2.2-.8L19 2Z"/></svg></div>
+      <div><div class="brand-name">Qadasy.Aymen</div><div class="brand-sub">INTELLIGENCE, SIMPLIFIED</div></div>
+    </div>
+    <button class="new-chat" id="newChat"><span>＋</span> New conversation</button>
+    <div class="side-label">RECENT CHATS</div>
+    <div class="history" id="history"><div class="history-empty">Your conversations will appear here.</div></div>
+    <div class="side-bottom">Made to help you think, create and move forward.<br>© <span id="year"></span> Qadasy.Aymen</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="mobile-brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M12 3.2 14.2 9.8 21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2L12 3.2Z"/></svg></div>Qadasy.Aymen</div>
+      <div class="model-label"><span class="status-dot"></span> AI Assistant <span style="color:#7f8ba0;font-weight:400">· Gemini Flash</span></div>
+      <div class="top-right"><span class="pill">Personal AI workspace</span></div>
+    </header>
+
+    <section class="content">
+      <div class="welcome" id="welcome">
+        <div class="orb"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M12 2.8 14.4 9.6 21.2 12 14.4 14.4 12 21.2 9.6 14.4 2.8 12 9.6 9.6 12 2.8Z"/><path d="m19 2 .7 2.3L22 5l-2.3.7L19 8l-.7-2.3L16 5l2.3-.7L19 2Z"/></svg></div>
+        <div class="eyebrow">Your ideas, amplified</div>
+        <h1>Meet your new<br><span class="gradient">thinking partner.</span></h1>
+        <p>Ask questions, explore ideas, write with confidence and solve problems — all in one thoughtful AI workspace.</p>
+        <div class="suggestions">
+          <button class="suggestion" data-prompt="Help me create a clear, realistic plan to achieve an important goal."><strong>✦ Plan something</strong><span>Turn a big goal into clear next steps.</span></button>
+          <button class="suggestion" data-prompt="Explain a difficult topic in simple language, with examples."><strong>◈ Learn something</strong><span>Understand complex topics with ease.</span></button>
+          <button class="suggestion" data-prompt="Help me write a polished, professional email. Ask me for the details you need."><strong>✎ Write with confidence</strong><span>Create clear and professional writing.</span></button>
+          <button class="suggestion" data-prompt="Give me five creative project ideas and explain the benefits of each."><strong>⌘ Explore ideas</strong><span>Find fresh angles and new possibilities.</span></button>
+        </div>
+      </div>
+      <div class="messages" id="messages" aria-live="polite"></div>
+    </section>
+
+    <div class="composer-wrap">
+      <form class="composer" id="chatForm">
+        <textarea id="prompt" rows="1" maxlength="6000" placeholder="Message Qadasy.Aymen..." aria-label="Your message"></textarea>
+        <div class="composer-bottom">
+          <span class="composer-hint">Enter to send · Shift + Enter for a new line</span>
+          <button class="send" id="send" type="submit" aria-label="Send message">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="m5 12 14-7-4 14-3-6-7-1Z"/><path d="m12 13 7-8"/></svg>
+          </button>
+        </div>
+      </form>
+      <div class="disclaimer">Qadasy.Aymen can make mistakes. Check important information with reliable sources.</div>
+    </div>
+  </main>
+</div>
+<div class="toast hidden" id="toast" role="status"></div>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const form = $("#chatForm"), input = $("#prompt"), send = $("#send");
+  const messagesEl = $("#messages"), welcome = $("#welcome"), historyEl = $("#history");
+  let messages = [];
+  let conversations = [];
+  let busy = false;
+
+  $("#year").textContent = new Date().getFullYear();
+
+  function toast(message) {
+    const el = $("#toast"); el.textContent = message; el.classList.remove("hidden");
+    clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.add("hidden"), 3200);
+  }
+  function escapeHTML(value) {
+    return value.replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch]));
+  }
+  function formatText(raw) {
+    let text = escapeHTML(raw);
+    text = text.replace(/```([\s\S]*?)```/g, (_, code) => `<pre><code>${code.trim()}</code></pre>`);
+    text = text.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+    text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
+    const blocks = text.split(/\n{2,}/);
+    return blocks.map(block => {
+      const lines = block.split("\n");
+      if (lines.every(line => /^\s*[-•]\s+/.test(line))) return "<ul>" + lines.map(line => `<li>${line.replace(/^\s*[-•]\s+/, "")}</li>`).join("") + "</ul>";
+      if (lines.every(line => /^\s*\d+[.)]\s+/.test(line))) return "<ol>" + lines.map(line => `<li>${line.replace(/^\s*\d+[.)]\s+/, "")}</li>`).join("") + "</ol>";
+      return `<p>${block.replace(/\n/g, "<br>")}</p>`;
+    }).join("");
+  }
+  function renderMessage(role, content, addActions = false) {
+    const row = document.createElement("article");
+    row.className = "message";
+    const isAI = role === "assistant";
+    row.innerHTML = `
+      <div class="avatar ${isAI ? "ai" : "user"}">${isAI ? "Q" : "YOU"}</div>
+      <div class="message-body">
+        <div class="message-head">${isAI ? "Qadasy.Aymen" : "You"}</div>
+        <div class="message-text">${isAI ? formatText(content) : `<p>${escapeHTML(content).replace(/\n/g,"<br>")}</p>`}</div>
+        ${addActions ? '<div class="message-actions"><button class="icon-btn copy">Copy response</button></div>' : ""}
+      </div>`;
+    if (addActions) row.querySelector(".copy").addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(content); toast("Response copied."); }
+      catch { toast("Copy is not available in this browser."); }
+    });
+    messagesEl.appendChild(row);
+    return row;
+  }
+  function showTyping() {
+    const row = document.createElement("article");
+    row.className = "message"; row.id = "typing";
+    row.innerHTML = '<div class="avatar ai">Q</div><div class="message-body"><div class="message-head">Qadasy.Aymen is thinking</div><div class="typing"><i></i><i></i><i></i></div></div>';
+    messagesEl.appendChild(row); scrollDown();
+  }
+  function scrollDown() { window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); }
+  function updateView() {
+    welcome.classList.toggle("hidden", messages.length > 0);
+    messagesEl.innerHTML = "";
+    messages.forEach((m, i) => renderMessage(m.role, m.content, m.role === "assistant"));
+    renderHistory();
+  }
+  function renderHistory() {
+    historyEl.innerHTML = "";
+    if (!conversations.length) { historyEl.innerHTML = '<div class="history-empty">Your conversations will appear here.</div>'; return; }
+    conversations.slice(-8).reverse().forEach((c, idx) => {
+      const b = document.createElement("button"); b.className = "history-item";
+      b.textContent = c.title; b.title = c.title;
+      b.addEventListener("click", () => { messages = c.messages.map(m => ({...m})); updateView(); });
+      historyEl.appendChild(b);
+    });
+  }
+  function saveConversation() {
+    if (!messages.length) return;
+    const title = messages.find(m => m.role === "user")?.content.slice(0, 42) || "New conversation";
+    const existing = conversations.findIndex(c => c.id === activeId);
+    const entry = { id: activeId, title, messages: messages.map(m => ({...m})) };
+    if (existing >= 0) conversations[existing] = entry; else conversations.push(entry);
+    conversations = conversations.slice(-8); renderHistory();
+  }
+  let activeId = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+  function newChat() {
+    if (messages.length) saveConversation();
+    messages = []; activeId = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+    updateView(); input.focus();
+  }
+  $("#newChat").addEventListener("click", newChat);
+  document.querySelectorAll("[data-prompt]").forEach(btn => btn.addEventListener("click", () => {
+    input.value = btn.dataset.prompt; input.focus(); resizeInput();
+  }));
+  function resizeInput() { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 150) + "px"; }
+  input.addEventListener("input", resizeInput);
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+  });
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || busy) return;
+    if (text.length > 6000) { toast("Please keep your message under 6,000 characters."); return; }
+    busy = true; send.disabled = true;
+    welcome.classList.add("hidden");
+    messages.push({ role: "user", content: text });
+    renderMessage("user", text);
+    input.value = ""; resizeInput(); showTyping();
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: messages.slice(-16) })
+      });
+      const data = await response.json().catch(() => ({}));
+      $("#typing")?.remove();
+      if (!response.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+      messages.push({ role: "assistant", content: data.reply });
+      renderMessage("assistant", data.reply, true);
+      saveConversation(); scrollDown();
+    } catch (err) {
+      $("#typing")?.remove();
+      renderMessage("assistant", `I couldn't complete that request. ${err.message}`);
+      toast(err.message);
+    } finally {
+      busy = false; send.disabled = false; input.focus();
+    }
+  });
+})();
+</script>
+</body>
+</html>
